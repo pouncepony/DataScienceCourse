@@ -69,7 +69,7 @@ def get_pie_chart(entered_site):
         grouped = filtered_df[['class']].groupby('class').size().reset_index(name='class-count')
         fig = px.pie(grouped, values='class-count', 
         names='class', 
-        title='Total Success Launches for site')
+        title='Successful Launches for site '+ str(entered_site))
         return fig
         # return the outcomes piechart for a selected site
 
@@ -81,18 +81,22 @@ def get_pie_chart(entered_site):
 def get_scatter_chart(entered_site, payload_range):
     print(payload_range)
     if entered_site == 'ALL':
-        fig = px.scatter(spacex_df, x="Payload Mass (kg)", y="class",
+        filtered_df = spacex_df[spacex_df["Payload Mass (kg)"] >= payload_range[0]]
+        filtered_df2 = filtered_df[filtered_df["Payload Mass (kg)"] <= payload_range[1]]
+        fig = px.scatter(filtered_df2, x="Payload Mass (kg)", y="class",
         color="Booster Version Category", 
         title='Correlation Between Payload Mass and success for all sites')
         return fig
     else:
         filtered_df = spacex_df[spacex_df['Launch Site'] == entered_site]
+        filtered_df1 = filtered_df[filtered_df["Payload Mass (kg)"] >= payload_range[0]]
+        filtered_df2 = filtered_df1[filtered_df1["Payload Mass (kg)"] <= payload_range[1]]
         fig = px.scatter(filtered_df, x="Payload Mass (kg)", y="class",
         color="Booster Version Category", 
-        title='Correlation Between Payload Mass and success for site')
+        title='Correlation Between Payload Mass and success for site ' + str(entered_site))
         return fig
         # return the outcomes piechart for a selected site
 
 # Run the app
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(port=8051)
